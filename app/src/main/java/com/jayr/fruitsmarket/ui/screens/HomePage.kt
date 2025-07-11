@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,20 +42,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.jayr.fruitsmarket.data.models.Cart
-import com.jayr.fruitsmarket.data.models.getCart
 import com.jayr.fruitsmarket.data.models.getFruits
+import com.jayr.fruitsmarket.ui.components.FruitCardItem
+import com.jayr.fruitsmarket.ui.viewmodel.ShopViewModel
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun HomePage(innerPadding: PaddingValues) {
+    /*
+    * Attain the screen dimensions
+    * */
     val configuration = LocalConfiguration.current
     configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
 
     // define the mutable states
-    var cart = remember { mutableStateOf(Cart()) }
+//    var cart by remember { mutableStateOf(Cart()) }
+//    var fruits by remember { mutableStateOf(getFruits()) }
+
+    var shopViewModel: ShopViewModel = viewModel()
+    var cart = shopViewModel.cart
+    var fruits = shopViewModel.fruits
+
+
     Column(
         modifier = Modifier.padding(innerPadding),
         ) {
@@ -75,7 +88,7 @@ fun HomePage(innerPadding: PaddingValues) {
                 }
 
             Badge {
-                Text(text = "${cart.value.fruits.size}")
+                Text(text = "${shopViewModel.cart.fruits.size}")
             }
         }
         Text(
@@ -89,110 +102,26 @@ fun HomePage(innerPadding: PaddingValues) {
                 .padding(horizontal = 8.dp, vertical = 12.dp)
         )
 
-
         Spacer(modifier = Modifier.padding(4.dp))
 
-        var fruits by remember { mutableStateOf(getFruits()) }
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
         ) {
-            itemsIndexed(fruits) { index, item ->
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White
-                    ), modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.BottomCenter,
-                            modifier = Modifier.padding(8.dp)
-                        ) {
-                            AsyncImage(
-                                model = item.image,
-                                contentDescription = "Image of ${item.name}",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(100.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                            )
-                            Badge(
-                                containerColor = Color.Green, modifier = Modifier.padding(4.dp)
-                            ) {
-                                Text(
-                                    text = "Ksh. ${item.price}/=",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(4.dp)
-                                )
-                            }
+            itemsIndexed(shopViewModel.fruits) { index, item ->
 
-                        }
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .fillMaxHeight()
-                        ) {
-                            Text(
-                                text = item.name, fontSize = 20.sp, fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = item.description,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.Light,
-                                modifier = Modifier.width(screenWidth * 2 / 4)
-                            )
-                            Text(
-                                text = "Supplier by ${item.supplier}",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Light
-                            )
-                            Text(
-                                text = " ${item.quantityAvailable} remaining",
-                                fontSize = 12.sp,
-                                color = Color.Gray,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .fillMaxHeight()
-                        ) {
+                FruitCardItem(
+                    item = item,
+                    screenWidth = screenWidth,
+                    addToCart = {
 
-                            IconButton(
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = Color.Green
-                                ), onClick = {
-                                    /*
-                                    * - Create a variable of the fruits that is a mutable list
-                                    * - Add the new Item to your cart
-                                    * - assign the old value of the cart to the new one in this scenario the copy() triggers an update
-                                    * */
-                                    var fruits = cart.value.fruits.toMutableList()
-                                    fruits.add(item)
-                                    cart.value = cart.value.copy(fruits = fruits)
-                                }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Add,
-                                    contentDescription = "Icons of add to cart"
-                                )
-                            }
-                        }
+                        shopViewModel.addToCart(item)
+                    },
+                    reduceStockQuantity = {
+                       shopViewModel.reduceItemFromCart(item=item, index =index)
                     }
-                }
-
+                )
 
             }
         }

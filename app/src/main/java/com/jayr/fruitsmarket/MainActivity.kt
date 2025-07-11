@@ -12,17 +12,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.jayr.fruitsmarket.ui.screens.CartPage
 import com.jayr.fruitsmarket.ui.screens.HomePage
 import com.jayr.fruitsmarket.ui.theme.FruitsMarketTheme
-
+//UI controller: Activity, Fragments, Composables ==> lifecycle
+// viewmodels: lifecylce aware
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             FruitsMarketTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                   HomePage(innerPadding)
+                Scaffold(
+                    topBar = {
+                   },
+                    modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    HomePage(innerPadding)
                 }
             }
         }
