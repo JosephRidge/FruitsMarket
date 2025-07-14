@@ -1,5 +1,4 @@
 package com.jayr.fruitsmarket.ui.viewmodel
-
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,7 +11,7 @@ class ShopViewModel: ViewModel() {
     // properties or observables here =>states
     var cart by mutableStateOf(Cart())
     var fruits by mutableStateOf(getFruits())
-    private set
+        private set
 
     // functions
     fun addToCart(item: Fruit){
@@ -31,7 +30,7 @@ class ShopViewModel: ViewModel() {
         /*
                        * What data object are we manipulating
                        * What action are we doing
-                       * triggere recomposition
+                       * trigger recomposition
                        * */
         val updatedFruits = fruits.toMutableList()
         if(item.quantityAvailable >0){

@@ -1,5 +1,6 @@
 package com.jayr.fruitsmarket.ui.components
 
+import androidx.annotation.NavigationRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -135,3 +136,5 @@ fun FruitCardItem(item: Fruit,screenWidth:Dp, addToCart:()->Unit, reduceStockQua
         }
     }
 }
+
+ 

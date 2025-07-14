@@ -12,9 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jayr.fruitsmarket.ui.screens.CartPage
 import com.jayr.fruitsmarket.ui.screens.HomePage
 import com.jayr.fruitsmarket.ui.theme.FruitsMarketTheme
+import com.jayr.fruitsmarket.ui.viewmodel.ShopViewModel
+
 //UI controller: Activity, Fragments, Composables ==> lifecycle
 // viewmodels: lifecylce aware
 class MainActivity : ComponentActivity() {
@@ -27,7 +30,8 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                    },
                     modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomePage(innerPadding)
+                    var shopViewModel: ShopViewModel = viewModel()
+                    HomePage(innerPadding, shopViewModel)
                 }
             }
         }
